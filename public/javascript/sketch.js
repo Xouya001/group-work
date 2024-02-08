@@ -26,7 +26,7 @@ function draw() {
 
    noStroke();
    lights();
-   directionalLight(255, 255, 150, 0.5, 0.5, -1);
+   directionalLight(255, 255, 255, 0.5, 0.5, -1);
 
    
    
