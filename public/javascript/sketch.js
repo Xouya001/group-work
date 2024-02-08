@@ -8,10 +8,14 @@ let roll = -30;
 let pitch = 0;
 let yaw = -20;
 let loongModel;
+let loongTexture;
+
 
 function preload() {
   // 在setup函数执行之前预加载模型
   loongModel = loadModel('model/loong.obj', true);
+  
+
 }
 
 
@@ -19,6 +23,7 @@ function setup() {
   canvas = createCanvas(windowWidth, windowHeight, WEBGL);
  
   createEasyCam();
+
 
 }
  
@@ -124,6 +129,8 @@ ambientMaterial(255, 200, 200); // 小猪头部
   rotateY(PI / 2); 
   box(10, 20, 10);
   pop();
+
+   
   
   push();
   translate(40, -105, 5); 
@@ -132,6 +139,7 @@ ambientMaterial(255, 200, 200); // 小猪头部
   pop();
   
   push();
+  normalMaterial();
   translate(-400,-60,-50);
   rotateX(PI);
   rotateY(PI/2);
@@ -141,6 +149,7 @@ ambientMaterial(255, 200, 200); // 小猪头部
   pop();
 
   push();
+  normalMaterial();
   translate(400,-60,-50);
   rotateX(PI);
   rotateY(-PI/2);
