@@ -7,8 +7,12 @@ let canvas;
 let roll = -30;
 let pitch = 0;
 let yaw = -20;
+let loongModel;
 
-
+function preload() {
+  // 在setup函数执行之前预加载模型
+  loongModel = loadModel('model/loong.obj', true);
+}
 
 
 function setup() {
@@ -127,7 +131,24 @@ ambientMaterial(255, 200, 200); // 小猪头部
   box(10, 20, 10);
   pop();
   
+  push();
+  translate(-400,-60,-50);
+  rotateX(PI);
+  rotateY(PI/2);
+  scale(3,3,3);
+  model(loongModel);
+  
+  pop();
 
+  push();
+  translate(400,-60,-50);
+  rotateX(PI);
+  rotateY(-PI/2);
+  scale(3,3,3);
+  model(loongModel);
+  
+  pop();
+  
 
 }
 //process the incoming OSC message and use them for our sketch
