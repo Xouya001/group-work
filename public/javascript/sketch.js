@@ -13,6 +13,7 @@ let loongHeadPosition2;
 let coinModel;
 let cloudModel; 
 let mintColor;
+let fuTextures=[];
 
 function preload() {
   loongModel = loadModel('model/loong.obj', true);
@@ -24,12 +25,26 @@ function preload() {
 function setup() {
   canvas = createCanvas(windowWidth, windowHeight, WEBGL);
   createEasyCam();
+  
+//creat Fu
+  for (let i = 0; i < 20; i++) {
+    let graphics = createGraphics(100, 100);
+    graphics.background(255, 0, 0, 0); // 透明背景
+    graphics.fill(255, 215, 0); // 金色
+    graphics.textAlign(CENTER, CENTER);
+    graphics.textSize(64);
+    graphics.text("福", 50, 50);
+    fuTextures.push(graphics);
+  }
+
   fireParticleSystem = new ParticleSystem(createVector(0, 0, 0));
   loongHeadPosition = createVector(-120, -140, -50);
   fireParticleSystem = new ParticleSystem(loongHeadPosition);
   loongHeadPosition2 = createVector(140, -140, -50);
   fireParticleSystem2 = new ParticleSystem(loongHeadPosition2);
 }
+
+
 
 function draw() {
   background(255,0,0);
@@ -83,6 +98,22 @@ function draw() {
   pop();
   drawFu();
 }
+
+function drawFu() {
+  for (let i = 0; i < fuTextures.length; i++) {
+    push();
+    let x = random(-width / 2, width / 2);
+    let y = random(-height / 2, height / 2);
+    let z = random(-200, 200); // 调整Z轴以控制在其他模型前后
+    translate(x, y, z);
+    rotateX(PI / 2); // 根据需要调整
+    texture(fuTextures[i]);
+    plane(100, 100); // 根据纹理大小调整平面大小
+    pop();
+  }
+}
+
+
 
 function drawPig() {
   // 绘制小猪
@@ -173,18 +204,6 @@ function drawPig() {
   box(10, 20, 10);
   pop();
 }
-
-function drawFu(){
-  push();
-  translate(-width / 2, -height / 2, 0); // 调整至左上角，以适配WEBGL坐标系
-  fill(255, 215, 0); // 金色
-  textSize(32);
-  for (let i = 0; i < 20; i++) {
-    text("福", random(width), random(height));
-  }
-  pop();
-}
-
 
 class ParticleSystem {
   constructor(position) {
