@@ -14,18 +14,22 @@ let coinModel;
 let cloudModel; 
 let mintColor;
 let fuCharacters = []; 
+let bgMusic;
 
 function preload() {
   loongModel = loadModel('model/loong.obj', true);
   loongTexture = loadImage('model/123.jpg');
   coinModel = loadModel('model/coin.obj', true);
   cloudModel = loadModel('model/cloud1.obj', true);
+  bgMusic = loadSound('sound/Chinese New Year music.mp3');
 }
 
 function setup() {
   canvas = createCanvas(windowWidth, windowHeight, WEBGL);
   createEasyCam();
   
+//music play
+  bgMusic.loop();
 //creat Fu
 for (let i = 0; i < 50; i++) {
   let graphics = createGraphics(100, 100);
