@@ -27,9 +27,7 @@ function preload() {
 function setup() {
   canvas = createCanvas(windowWidth, windowHeight, WEBGL);
   createEasyCam();
-  
-//music play
-  bgMusic.loop();
+
 //creat Fu
 for (let i = 0; i < 50; i++) {
   let graphics = createGraphics(100, 100);
@@ -42,14 +40,16 @@ for (let i = 0; i < 50; i++) {
   fuCharacters.push(new FuCharacter(fuTexture, createVector(random(-width / 2, width / 2), random(-height / 2, height / 2), random(-200, 200))));
 }
 
+//music play
+bgMusic.setVolume(0.1);
+bgMusic.loop();
+
   fireParticleSystem = new ParticleSystem(createVector(0, 0, 0));
   loongHeadPosition = createVector(-120, -140, -50);
   fireParticleSystem = new ParticleSystem(loongHeadPosition);
   loongHeadPosition2 = createVector(140, -140, -50);
   fireParticleSystem2 = new ParticleSystem(loongHeadPosition2);
 }
-
-
 
 function draw() {
   background(255,0,0);
