@@ -13,7 +13,7 @@ let loongHeadPosition2;
 let coinModel;
 let cloudModel; 
 let mintColor;
-let fuTextures=[];
+let fuCharacters = []; 
 
 function preload() {
   loongModel = loadModel('model/loong.obj', true);
@@ -27,15 +27,16 @@ function setup() {
   createEasyCam();
   
 //creat Fu
-  for (let i = 0; i < 20; i++) {
-    let graphics = createGraphics(100, 100);
-    graphics.background(255, 0, 0, 0); // 透明背景
-    graphics.fill(255, 215, 0); // 金色
-    graphics.textAlign(CENTER, CENTER);
-    graphics.textSize(64);
-    graphics.text("福", 50, 50);
-    fuTextures.push(graphics);
-  }
+for (let i = 0; i < 20; i++) {
+  let graphics = createGraphics(100, 100);
+  graphics.background(255, 0, 0, 0); // Transparent background
+  graphics.fill(255, 215, 0); // Gold color
+  graphics.textAlign(CENTER, CENTER);
+  graphics.textSize(64);
+  graphics.text("福", 50, 50);
+  let fuTexture = graphics.get();
+  fuCharacters.push(new FuCharacter(fuTexture, createVector(random(-width / 2, width / 2), random(-height / 2, height / 2), random(-200, 200))));
+}
 
   fireParticleSystem = new ParticleSystem(createVector(0, 0, 0));
   loongHeadPosition = createVector(-120, -140, -50);
@@ -98,22 +99,6 @@ function draw() {
   pop();
   drawFu();
 }
-
-function drawFu() {
-  for (let i = 0; i < fuTextures.length; i++) {
-    push();
-    let x = random(-width / 2, width / 2);
-    let y = random(-height / 2, height / 2);
-    let z = random(-200, 200); // 调整Z轴以控制在其他模型前后
-    translate(x, y, z);
-    rotateX(PI / 2); // 根据需要调整
-    texture(fuTextures[i]);
-    plane(100, 100); // 根据纹理大小调整平面大小
-    pop();
-  }
-}
-
-
 
 function drawPig() {
   // 绘制小猪
@@ -203,6 +188,41 @@ function drawPig() {
   rotateY(-PI / 2);
   box(10, 20, 10);
   pop();
+}
+
+//Fu 
+function drawFu() {
+  fuCharacters.forEach(fu => {
+    fu.update();
+    fu.display();
+  });
+}
+
+class FuCharacter {
+  constructor(texture, position) {
+    this.texture = texture;
+    this.position = position;
+    this.velocity = createVector(0, 0, -2); // Update to control speed
+  }
+
+  update() {
+    this.position.add(this.velocity);
+    // Reset position if out of bounds
+    if (this.position.z < -200 || this.position.z > 200) {
+      this.position.z = 200;
+      this.position.x = random(-width / 2, width / 2);
+      this.position.y = random(-height / 2, height / 2);
+    }
+  }
+
+  display() {
+    push();
+    translate(this.position.x, this.position.y, this.position.z);
+    rotateX(PI / 2);
+    texture(this.texture);
+    plane(100, 100);
+    pop();
+  }
 }
 
 class ParticleSystem {
