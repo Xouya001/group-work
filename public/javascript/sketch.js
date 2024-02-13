@@ -32,7 +32,7 @@ function setup() {
 }
 
 function draw() {
-  background(255);
+  background(255,0,0);
   ambientLight(200);
   specularMaterial(120);
   directionalLight(255, 255, 255, 0.5, 0.5, -1);
@@ -81,6 +81,7 @@ function draw() {
   fireParticleSystem.run();
   fireParticleSystem2.run();
   pop();
+  drawFu();
 }
 
 function drawPig() {
@@ -172,6 +173,18 @@ function drawPig() {
   box(10, 20, 10);
   pop();
 }
+
+function drawFu(){
+  push();
+  translate(-width / 2, -height / 2, 0); // 调整至左上角，以适配WEBGL坐标系
+  fill(255, 215, 0); // 金色
+  textSize(32);
+  for (let i = 0; i < 20; i++) {
+    text("福", random(width), random(height));
+  }
+  pop();
+}
+
 
 class ParticleSystem {
   constructor(position) {
