@@ -1,4 +1,32 @@
+//Work Title：Dragon Welcomes the Chinese New Year
+//Group Member: Xinyi Ouyang, Xumiao Wei, Xiaoyu Ge, Yu Yan
+
+//Introduction:
+//The interactive dynamic image we've created is inspired by 
+//a Chinese idiom, "二龙戏珠" (Two Dragons Playing with a Pearl), which 
+//describes a traditional Chinese artistic motif. This motif typically 
+//features two dragons swirling around a pearl, symbolizing auspiciousness 
+//and freedom. In our image, however, the pearl is playfully replaced with 
+//a pig. This substitution stems from a pun in Chinese, where the word for
+//pearl, "珠（zhu）," shares its pronunciation with the word for pig, also "猪（zhu）," 
+//adding a touch of cuteness to the scene. Thus, we've adapted the motif 
+//into "Two Dragons Playing with a Pig." Additionally, the dragons in the 
+//scene spew gold coins, signifying wealth and prosperity, against a red 
+//background that embodies the festive spirit of Chinese New Year. 
+//The entire scene is filled with rising "福（Fu）" characters, wishing 
+//everyone a year brimming with blessings. The background music is a 
+//classic Chinese New Year song performed by Andy Lau, titled "Gong Xi Fa Cai," 
+//enhancing the joyous atmosphere of welcoming the Year of the Dragon. 
+//Overall, the significance of this interactive dynamic image is to extend 
+//our best wishes for the Chinese New Year, hoping that everyone will enjoy 
+//prosperity, luck, and freedom every day of the Dragon Year, and become the 
+//most endearing version of themselves.
+
+//Coding part:
+//Establish a connection to the server
 const socket = io();
+
+//Global variables
 let canvas;
 let roll = -30;
 let pitch = 0;
@@ -16,6 +44,7 @@ let mintColor;
 let fuCharacters = []; 
 let bgMusic;
 
+//Load models and music
 function preload() {
   loongModel = loadModel('model/loong.obj', true);
   loongTexture = loadImage('model/123.jpg');
@@ -28,7 +57,7 @@ function setup() {
   canvas = createCanvas(windowWidth, windowHeight, WEBGL);
   createEasyCam();
 
-//creat Fu
+//Creat "福(Fu)"
 for (let i = 0; i < 50; i++) {
   let graphics = createGraphics(100, 100);
   graphics.background(255, 0, 0, 0); // Transparent background
@@ -40,10 +69,11 @@ for (let i = 0; i < 50; i++) {
   fuCharacters.push(new FuCharacter(fuTexture, createVector(random(-width / 2, width / 2), random(-height / 2, height / 2), random(-200, 200))));
 }
 
-//music play
+//Play music and set volume
 bgMusic.setVolume(0.1);
 bgMusic.loop();
 
+//Particle systems
   fireParticleSystem = new ParticleSystem(createVector(0, 0, 0));
   loongHeadPosition = createVector(-120, -140, -50);
   fireParticleSystem = new ParticleSystem(loongHeadPosition);
@@ -63,7 +93,7 @@ function draw() {
   rotateX(roll);
   rotateY(yaw);
 
-  // 绘制龙模型
+  // Render dragon models
   ambientMaterial(255, 0, 0);
   push();
   texture(loongTexture);
@@ -83,9 +113,9 @@ function draw() {
   model(loongModel);
   pop();
 
-  // 绘制云朵
-  mintColor = color(176, 224, 230); // 薄荷蓝色
-  let mintGreen = color(152, 251, 152); // 薄荷绿色
+  //Render clouds
+  mintColor = color(176, 224, 230); 
+  let mintGreen = color(152, 251, 152); 
   let cloudColor = lerpColor(mintColor, mintGreen, random(1));
 
   ambientMaterial(cloudColor);
@@ -96,7 +126,7 @@ function draw() {
   model(cloudModel);
   pop();
 
-  // 绘制小猪和金币粒子系统
+  // Draw pig and coins
   drawPig();
   fireParticleSystem.run();
   fireParticleSystem2.run();
@@ -105,7 +135,7 @@ function draw() {
 }
 
 function drawPig() {
-  // 绘制小猪
+  // Render pig
   ambientMaterial(255, 200, 200);
   push();
   translate(0, -60, -35);
@@ -194,7 +224,7 @@ function drawPig() {
   pop();
 }
 
-//Fu 
+//Draw "福(Fu)"
 function drawFu() {
   fuCharacters.forEach(fu => {
     fu.update();
@@ -202,11 +232,12 @@ function drawFu() {
   });
 }
 
+//福(Fu)'s position and speed
 class FuCharacter {
   constructor(texture, position) {
     this.texture = texture;
     this.position = position;
-    this.velocity = createVector(0, 0, -5); // Update to control speed
+    this.velocity = createVector(0, 0, -5); 
   }
 
   update() {
@@ -282,6 +313,7 @@ class Particle {
   }
 }
 
+//Additional functions for handling OSC messages and window resizing
 function unpackOSC(message) {
 }
 
