@@ -27,7 +27,7 @@ function setup() {
   createEasyCam();
   
 //creat Fu
-for (let i = 0; i < 20; i++) {
+for (let i = 0; i < 50; i++) {
   let graphics = createGraphics(100, 100);
   graphics.background(255, 0, 0, 0); // Transparent background
   graphics.fill(255, 215, 0); // Gold color
@@ -202,7 +202,7 @@ class FuCharacter {
   constructor(texture, position) {
     this.texture = texture;
     this.position = position;
-    this.velocity = createVector(0, 0, -2); // Update to control speed
+    this.velocity = createVector(0, 0, -5); // Update to control speed
   }
 
   update() {
@@ -218,7 +218,8 @@ class FuCharacter {
   display() {
     push();
     translate(this.position.x, this.position.y, this.position.z);
-    rotateX(PI / 2);
+    rotateX(PI/2);
+    rotateY(-PI/2);
     texture(this.texture);
     plane(100, 100);
     pop();
