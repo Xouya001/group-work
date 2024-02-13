@@ -208,7 +208,7 @@ class FuCharacter {
   update() {
     this.position.add(this.velocity);
     // Reset position if out of bounds
-    if (this.position.z < -200 || this.position.z > 200) {
+    if (this.position.z < -400 || this.position.z > 400) {
       this.position.z = 200;
       this.position.x = random(-width / 2, width / 2);
       this.position.y = random(-height / 2, height / 2);
@@ -221,7 +221,7 @@ class FuCharacter {
     rotateX(PI/2);
     rotateY(-PI/2);
     texture(this.texture);
-    plane(100, 100);
+    plane(50, 50);
     pop();
   }
 }
