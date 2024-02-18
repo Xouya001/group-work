@@ -25,8 +25,6 @@
 //Coding part:
 //Establish a connection to the server
 const socket = io();
-
-//Global variables
 let canvas;
 let roll = -30;
 let pitch = 0;
@@ -41,39 +39,17 @@ let loongHeadPosition2;
 let coinModel;
 let cloudModel; 
 let mintColor;
-let fuCharacters = []; 
-let bgMusic;
 
-//Load models and music
 function preload() {
   loongModel = loadModel('model/loong.obj', true);
   loongTexture = loadImage('model/123.jpg');
   coinModel = loadModel('model/coin.obj', true);
   cloudModel = loadModel('model/cloud1.obj', true);
-  bgMusic = loadSound('sound/Chinese New Year music.mp3');
 }
 
 function setup() {
   canvas = createCanvas(windowWidth, windowHeight, WEBGL);
   createEasyCam();
-
-//Creat "福(Fu)"
-for (let i = 0; i < 50; i++) {
-  let graphics = createGraphics(100, 100);
-  graphics.background(255, 0, 0, 0); // Transparent background
-  graphics.fill(255, 215, 0); // Gold color
-  graphics.textAlign(CENTER, CENTER);
-  graphics.textSize(64);
-  graphics.text("福", 50, 50);
-  let fuTexture = graphics.get();
-  fuCharacters.push(new FuCharacter(fuTexture, createVector(random(-width / 2, width / 2), random(-height / 2, height / 2), random(-200, 200))));
-}
-
-//Play music and set volume
-bgMusic.setVolume(0.1);
-bgMusic.loop();
-
-//Particle systems
   fireParticleSystem = new ParticleSystem(createVector(0, 0, 0));
   loongHeadPosition = createVector(-120, -140, -50);
   fireParticleSystem = new ParticleSystem(loongHeadPosition);
@@ -82,18 +58,18 @@ bgMusic.loop();
 }
 
 function draw() {
-  background(255,0,0);
+  background(255);
   ambientLight(200);
   specularMaterial(120);
   directionalLight(255, 255, 255, 0.5, 0.5, -1);
   noStroke();
 
-  push();
+
   rotateZ(pitch);
   rotateX(roll);
   rotateY(yaw);
 
-  // Render dragon models
+  // 绘制龙模型
   ambientMaterial(255, 0, 0);
   push();
   texture(loongTexture);
@@ -113,9 +89,9 @@ function draw() {
   model(loongModel);
   pop();
 
-  //Render clouds
-  mintColor = color(176, 224, 230); 
-  let mintGreen = color(152, 251, 152); 
+  // 绘制云朵
+  mintColor = color(176, 224, 230); // 薄荷蓝色
+  let mintGreen = color(152, 251, 152); // 薄荷绿色
   let cloudColor = lerpColor(mintColor, mintGreen, random(1));
 
   ambientMaterial(cloudColor);
@@ -126,16 +102,15 @@ function draw() {
   model(cloudModel);
   pop();
 
-  // Draw pig and coins
+  // 绘制小猪和金币粒子系统
   drawPig();
   fireParticleSystem.run();
   fireParticleSystem2.run();
-  pop();
-  drawFu();
+ 
 }
 
 function drawPig() {
-  // Render pig
+  // 绘制小猪
   ambientMaterial(255, 200, 200);
   push();
   translate(0, -60, -35);
@@ -224,43 +199,6 @@ function drawPig() {
   pop();
 }
 
-//Draw "福(Fu)"
-function drawFu() {
-  fuCharacters.forEach(fu => {
-    fu.update();
-    fu.display();
-  });
-}
-
-//福(Fu)'s position and speed
-class FuCharacter {
-  constructor(texture, position) {
-    this.texture = texture;
-    this.position = position;
-    this.velocity = createVector(0, 0, -5); 
-  }
-
-  update() {
-    this.position.add(this.velocity);
-    // Reset position if out of bounds
-    if (this.position.z < -400 || this.position.z > 400) {
-      this.position.z = 200;
-      this.position.x = random(-width / 2, width / 2);
-      this.position.y = random(-height / 2, height / 2);
-    }
-  }
-
-  display() {
-    push();
-    translate(this.position.x, this.position.y, this.position.z);
-    rotateX(PI/2);
-    rotateY(-PI/2);
-    texture(this.texture);
-    plane(50, 50);
-    pop();
-  }
-}
-
 class ParticleSystem {
   constructor(position) {
     this.origin = position.copy();
@@ -313,23 +251,52 @@ class Particle {
   }
 }
 
-//Additional functions for handling OSC messages and window resizing
-function unpackOSC(message) {
+//process the incoming OSC message and use them for our sketch
+function unpackOSC(message){
+
+  /*-------------
+
+  This sketch is set up to work with the gryosc app on the apple store.
+  Use either the gyro OR the rrate to see the two different behaviors
+  TASK: 
+  Change the gyro address to whatever OSC app you are using to send data via OSC
+  ---------------*/
+
+  //maps phone rotation directly 
+  // if(message.address == "/gyrosc/gyro"){
+  //   roll = message.args[0]; 
+  //   pitch = message.args[1];
+  //   yaw = message.args[2];
+  // }
+
+  //uses the rotation rate to keep rotating in a certain direction
+  if(message.address == "/gyrosc/rrate"){
+    roll += map(message.args[0],-3,3,-0.1,0.1);
+    pitch += map(message.args[1],-3,3,-0.1,0.1);
+    yaw += map(message.args[2],-3,3,-0.1,0.1);
+  }
 }
 
+//Events we are listening for
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
+// Connect to Node.JS Server
 socket.on("connect", () => {
   console.log(socket.id);
 });
 
+// Callback function on the event we disconnect
 socket.on("disconnect", () => {
   console.log(socket.id);
 });
 
+// Callback function to recieve message from Node.JS
 socket.on("message", (_message) => {
+
   console.log(_message);
+
   unpackOSC(_message);
+
 });
