@@ -1,7 +1,7 @@
-//Work Title：Dragon Welcomes the Chinese New Year
-//Group Member: Xinyi Ouyang, Xumiao Wei, Xiaoyu Ge, Yu Yan
+// Work Title：Dragon Welcomes the Chinese New Year
+// Group Member: Xinyi Ouyang, Xumiao Wei, Xiaoyu Ge, Yu Yan
 
-//Introduction:
+// Introduction:
 //The interactive dynamic image we've created is inspired by 
 //a Chinese idiom, "二龙戏珠" (Two Dragons Playing with a Pearl), which 
 //describes a traditional Chinese artistic motif. This motif typically 
@@ -13,18 +13,27 @@
 //into "Two Dragons Playing with a Pig." Additionally, the dragons in the 
 //scene spew gold coins, signifying wealth and prosperity, against a red 
 //background that embodies the festive spirit of Chinese New Year. 
-//The entire scene is filled with rising "福（Fu）" characters, wishing 
-//everyone a year brimming with blessings. The background music is a 
-//classic Chinese New Year song performed by Andy Lau, titled "Gong Xi Fa Cai," 
-//enhancing the joyous atmosphere of welcoming the Year of the Dragon. 
-//Overall, the significance of this interactive dynamic image is to extend 
-//our best wishes for the Chinese New Year, hoping that everyone will enjoy 
+//The entire scene is filled with upside-down "福(Fu)" characters, signifying the 
+//arrival of fortune, wishing everyone a year filled with blessings.The background  
+//music is a classic Chinese New Year song performed by Andy Lau, titled 
+//"Gong Xi Fa Cai," enhancing the joyous atmosphere of welcoming the Year of  
+//the Dragon. Overall, the significance of this interactive dynamic image is to 
+//extend our best wishes for the Chinese New Year, hoping that everyone will enjoy 
 //prosperity, luck, and freedom every day of the Dragon Year, and become the 
 //most endearing version of themselves.
 
-//Coding part:
-//Establish a connection to the server
+// Interactive method :
+//Using the mobile app "Gyrosc," rotate the theme objects within the screen, 
+//such as the dragons, the pig, and the "Fu" characters. Viewers can interact with 
+//the entire image by rotating these theme objects in sync with the festive background 
+//music, using the app to match the rhythm of the music. This interaction allows users 
+//to immerse themselves in the celebratory atmosphere.
+
+// Coding part:
+// Establish a connection to the server
 const socket = io();
+
+// Global variables 
 let canvas;
 let roll = -30;
 let pitch = 0;
@@ -39,37 +48,61 @@ let loongHeadPosition2;
 let coinModel;
 let cloudModel; 
 let mintColor;
+let fuCharacters = [];
+let bgMusic;
 
+// Preload models and music
 function preload() {
   loongModel = loadModel('model/loong.obj', true);
   loongTexture = loadImage('model/123.jpg');
   coinModel = loadModel('model/coin.obj', true);
   cloudModel = loadModel('model/cloud1.obj', true);
+  bgMusic = loadSound('sound/Chinese New Year music.mp3');
 }
 
+// Setup function to initializ
 function setup() {
   canvas = createCanvas(windowWidth, windowHeight, WEBGL);
   createEasyCam();
+
+  // Create "Fu"
+  for (let i = 0; i < 50; i++) {
+    let graphics = createGraphics(100, 100);
+    graphics.background(255, 0, 0, 0); // Transparent background
+    graphics.fill(255, 215, 0); // Gold color
+    graphics.textAlign(CENTER, CENTER);
+    graphics.textSize(64);
+    graphics.text("福", 50, 50);
+    let fuTexture = graphics.get();
+    fuCharacters.push(new FuCharacter(fuTexture, createVector(random(-width / 2, width / 2), random(-height / 2, height / 2), random(-200, 200))));
+  }
+  
+  // Initialize particle systems
   fireParticleSystem = new ParticleSystem(createVector(0, 0, 0));
   loongHeadPosition = createVector(-120, -140, -50);
   fireParticleSystem = new ParticleSystem(loongHeadPosition);
   loongHeadPosition2 = createVector(140, -140, -50);
   fireParticleSystem2 = new ParticleSystem(loongHeadPosition2);
+
+// Play music and set volume
+bgMusic.setVolume(0.1);
+bgMusic.loop();
 }
 
+//  Render the scene
 function draw() {
-  background(255);
+  background(255,0,0);
   ambientLight(200);
   specularMaterial(120);
   directionalLight(255, 255, 255, 0.5, 0.5, -1);
   noStroke();
 
-
+// Apply rotations based on gyroscope data
   rotateZ(pitch);
   rotateX(roll);
   rotateY(yaw);
 
-  // 绘制龙模型
+  // Draw dragon
   ambientMaterial(255, 0, 0);
   push();
   texture(loongTexture);
@@ -89,9 +122,9 @@ function draw() {
   model(loongModel);
   pop();
 
-  // 绘制云朵
-  mintColor = color(176, 224, 230); // 薄荷蓝色
-  let mintGreen = color(152, 251, 152); // 薄荷绿色
+  // Draw clouds
+  mintColor = color(176, 224, 230); 
+  let mintGreen = color(152, 251, 152); 
   let cloudColor = lerpColor(mintColor, mintGreen, random(1));
 
   ambientMaterial(cloudColor);
@@ -102,15 +135,15 @@ function draw() {
   model(cloudModel);
   pop();
 
-  // 绘制小猪和金币粒子系统
+   // Draw the pig and activate the particle systems
   drawPig();
   fireParticleSystem.run();
   fireParticleSystem2.run();
- 
+  drawFu();
 }
 
+// Function to draw the pig model
 function drawPig() {
-  // 绘制小猪
   ambientMaterial(255, 200, 200);
   push();
   translate(0, -60, -35);
@@ -199,6 +232,43 @@ function drawPig() {
   pop();
 }
 
+// Draw "Fu" 
+function drawFu() {
+  fuCharacters.forEach(fu => {
+    fu.update();
+    fu.display();
+  });
+}
+
+// Define "FuCharacter" class
+class FuCharacter {
+  constructor(texture, position) {
+    this.texture = texture;
+    this.position = position;
+    // Update to control speed
+    this.velocity = createVector(0, 5, 0); 
+  }
+
+  //"Fu"position
+  update() {
+    this.position.add(this.velocity);
+    if (this.position.y > height / 2) {
+      this.position.y = -height / 2; 
+      this.position.x = random(-width / 2, width / 2); 
+    }
+  }
+
+  display() {
+    push();
+    translate(this.position.x, this.position.y, this.position.z);
+    rotateZ(-PI);
+    texture(this.texture);
+    plane(50, 50);
+    pop();
+  }
+}
+
+//  Define "ParticleSystem" class
 class ParticleSystem {
   constructor(position) {
     this.origin = position.copy();
@@ -223,6 +293,7 @@ class ParticleSystem {
   }
 }
 
+// Define "Particle" class
 class Particle {
   constructor(position) {
     this.acceleration = createVector(0, 0.05);
